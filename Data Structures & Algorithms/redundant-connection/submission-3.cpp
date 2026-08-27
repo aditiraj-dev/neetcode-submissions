@@ -1,0 +1,53 @@
+class DSU{
+public:
+    vector<int> parent;
+    vector<int> rank;
+    DSU(int n)
+    {
+        parent.resize(n + 1);
+        rank.resize(n + 1, 1);
+        for(int i = 1; i <= n; i++)
+        {
+            parent[i] = i;
+        }
+    }
+
+    int find(int node)
+    {
+        int cur = node;
+        while(cur != parent[node])
+        {
+            parent[cur] = parent[parent[cur]];
+            cur = parent[cur];
+        }
+
+        return cur;
+    }
+
+    bool unionSets(int u, int v)
+    {
+        int pu = find(u);
+        int pv = find(v);
+
+        if(pu == pv) return false;
+
+        if(rank[pv] > rank[pu]) swap(pu, pv); //pv needs to be smaller tree
+
+        parent[pv] = pu;
+        rank[pu] += rank[pv];
+        return true;
+    }
+};
+
+class Solution {
+public:
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        DSU dsu(edges.size());
+        for(auto& e : edges)
+        {
+            if(!dsu.unionSets(e[0], e[1])) return {e[0], e[1]};
+        }
+
+        return {};
+    }
+};
